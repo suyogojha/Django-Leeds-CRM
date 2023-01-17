@@ -19,5 +19,9 @@
     <h1>the lead details of {{ lead.first_name }} </h1> <hr>
     <p>The age of the person is {{ lead.age }}</p> <hr>
     <p>The name of Age is {{ lead.agent }}</p>
+    <hr>
+    
+    <a href="{% url 'leads:lead-update' lead.pk %}">Update</a>
+    <a href="{% url 'leads:lead-delete' lead.pk %}">Delete</a>
 </body>
 </html>
