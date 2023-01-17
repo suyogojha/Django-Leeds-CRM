@@ -1,20 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        .lead{
-            padding: 10px 10px 6px 6px;
-            margin-top: 10px;
-            background-color: aliceblue;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content  %}
     <a href="/leads">Back to List</a>
     <p>This is craete Page Of lead</p>
 
@@ -24,5 +10,4 @@
         <button type="submit">Submit</button>
     </form>
 
-</body>
-</html>
+{% endblock content  %}

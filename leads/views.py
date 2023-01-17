@@ -3,6 +3,23 @@ from .models import Lead, Agent
 from django.http import HttpResponse
 from .forms import *
 
+# import for class based view 
+from django.views.generic import TemplateView
+
+# same thing as class based view shown as above 
+# class LandingpageView(TemplateView):
+#     template_name = "landing.html" 
+
+
+
+
+# function based view 
+def landing_page(request):
+    return render(request, "landing.html")
+    
+
+
+
 def lead_list(request):
     leads = Lead.objects.all()
     context = {
