@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'leads',
+    'agents',
 ]
 
 MIDDLEWARE = [
@@ -128,10 +129,15 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = "static_root"
 
-
-
+# for creating user 
 AUTH_USER_MODEL = 'leads.User'
 
+# for email 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# redirect after login 
+LOGIN_REDIRECT_URL = "/leads"
+LOGOUT_REDIRECT_URL = "/leads"
 
-
+# this is used in login required if the user is not logged in then the url is redirected in this url below
+LOGIN_URL = "/login"

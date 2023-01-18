@@ -1,7 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from .models import Lead, Agent
+from django.views import generic
 from django.http import HttpResponse
 from .forms import *
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+# sending mail
+from django.core.mail import send_mail
 
 # import for class based view 
 from django.views.generic import TemplateView
@@ -10,7 +17,14 @@ from django.views.generic import TemplateView
 # class LandingpageView(TemplateView):
 #     template_name = "landing.html" 
 
+# for signup
 
+class SignupView(generic.CreateView):
+    template_name = "registration/signup.html"
+    form_class = CustomUserCreationForm
+    
+    def get_success_url(self):
+        return reverse("login")
 
 
 # function based view 
@@ -18,8 +32,25 @@ def landing_page(request):
     return render(request, "landing.html")
     
 
+# class based create lead 
+class LeadCreateView(LoginRequiredMixin, generic.CreateView):
+    template_name = "leads/lead_create.html"
+    form_class = LeadModelForm
+    
+    def get_success_url(self):
+        return reverse("leads:lead-list")
 
-
+    # sending email 
+    def form_valid(self, form):
+        send_mail(
+            subject = "A lead has been created",
+            message = "Go to the site to see new leads",
+            from_email = "test@test.com",
+            recipient_list = ["test2@test.com"] 
+        )
+        return super(LeadCreateView, self).form_valid(form)
+            
+@login_required       
 def lead_list(request):
     leads = Lead.objects.all()
     context = {
@@ -27,7 +58,7 @@ def lead_list(request):
     }
     return render(request, "leads/lead_list.html", context)
 
-
+@login_required
 def lead_detail(request,pk):
     lead = Lead.objects.get(id=pk)
     context = {
@@ -37,7 +68,7 @@ def lead_detail(request,pk):
 
 
 # lead create start
-
+@login_required
 def lead_create(request):
     form = LeadModelForm()
     if request.method == "POST":
@@ -124,7 +155,7 @@ def lead_create(request):
 #     }
 #     return render(request, "leads/lead_update.html", context)
     
-
+@login_required
 def lead_update(request, pk):
     lead = Lead.objects.get(id=pk)
     form = LeadModelForm(instance=lead)
@@ -146,7 +177,7 @@ def lead_update(request, pk):
 
 
 #lead delete start
-
+@login_required
 def lead_delete(request, pk):
     lead = Lead.objects.get(id=pk)
     lead.delete()
