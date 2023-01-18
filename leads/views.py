@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # sending mail
 from django.core.mail import send_mail
+from agents.mixins import OrganisorAndLoginRequiredMixins
 
 # import for class based view 
 from django.views.generic import TemplateView
@@ -33,7 +34,7 @@ def landing_page(request):
     
 
 # class based create lead 
-class LeadCreateView(LoginRequiredMixin, generic.CreateView):
+class LeadCreateView(OrganisorAndLoginRequiredMixins, generic.CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadModelForm
     
@@ -50,13 +51,34 @@ class LeadCreateView(LoginRequiredMixin, generic.CreateView):
         )
         return super(LeadCreateView, self).form_valid(form)
             
-@login_required       
-def lead_list(request):
-    leads = Lead.objects.all()
-    context = {
-        "leads": leads
-    }
-    return render(request, "leads/lead_list.html", context)
+# @login_required       
+# def lead_list(request):
+#     leads = Lead.objects.all()
+#     context = {
+#         "leads": leads
+#     }
+#     return render(request, "leads/lead_list.html", context)
+
+
+class LeadListView(LoginRequiredMixin, generic.ListView):
+    template_name = "leads/lead_list.html"
+    context_object_name = "leads"
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        # initial queryset of leads for the entire organization 
+        if user.is_organisor:
+            queryset = Lead.objects.filter(organisation=user.userprofile)
+        else:
+            queryset = Lead.objects.filter(organisation=user.agent.userprofile)
+            
+            # filter for the agent that is logged in 
+            queryset = queryset.filter(agent__user=user)
+        return queryset
+
+
+
 
 @login_required
 def lead_detail(request,pk):
@@ -69,7 +91,7 @@ def lead_detail(request,pk):
 
 # lead create start
 @login_required
-def lead_create(request):
+def lead_create(request, OrganisorAndLoginRequiredMixins):
     form = LeadModelForm()
     if request.method == "POST":
         print("Receving a POST request")
@@ -155,36 +177,54 @@ def lead_create(request):
 #     }
 #     return render(request, "leads/lead_update.html", context)
     
-@login_required
-def lead_update(request, pk):
-    lead = Lead.objects.get(id=pk)
-    form = LeadModelForm(instance=lead)
-    if request.method == "POST":
-       form = LeadModelForm(request.POST, instance=lead)
-       if form.is_valid():
-           form.save()
-           return redirect("/leads")
-    context = {
-        "form": form,
-        "lead": lead,
-    }
-    return render(request, "leads/lead_update.html", context)
     
     
+# @login_required
+# def lead_update(request, pk):
+#     lead = Lead.objects.get(id=pk)
+#     form = LeadModelForm(instance=lead)
+#     if request.method == "POST":
+#        form = LeadModelForm(request.POST, instance=lead)
+#        if form.is_valid():
+#            form.save()
+#            return redirect("/leads")
+#     context = {
+#         "form": form,
+#         "lead": lead,
+#     }
+#     return render(request, "leads/lead_update.html", context)
+    
+    
+class LeadUpdateView(OrganisorAndLoginRequiredMixins, generic.UpdateView):
+    template_name = "leads/lead_update.html"
+    form_class = LeadModelForm
+    
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organization 
+        return Lead.objects.filter(organisation=user.userprofile)
 
 
 #lead update end
 
 
 #lead delete start
-@login_required
-def lead_delete(request, pk):
-    lead = Lead.objects.get(id=pk)
-    lead.delete()
-    return redirect("/leads")
+# @login_required
+# def lead_delete(request, pk):
+#     lead = Lead.objects.get(id=pk)
+#     lead.delete()
+#     return redirect("/leads")
     
 
-
+class LeadDeleteView(OrganisorAndLoginRequiredMixins, generic.UpdateView):
+    
+    def get_success_url(self):
+        return reverse("leads:lead-list")    
+    
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organization 
+        return Lead.objects.filter(organisation=user.userprofile)
 
 
 

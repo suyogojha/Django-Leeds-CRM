@@ -3,8 +3,9 @@ from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from leads.models import Agent
 from .forms import AgentModelForm
+from .mixins import OrganisorAndLoginRequiredMixins
 
-class AgentListView(LoginRequiredMixin, generic.ListView):
+class AgentListView(OrganisorAndLoginRequiredMixins, generic.ListView):
     template_name = "agents/agent_list.html"
     
     # here we have filtered the user created agent this will only show the agents created by specific  users that we are logged in 
@@ -14,7 +15,7 @@ class AgentListView(LoginRequiredMixin, generic.ListView):
 
 
 
-class AgentCreateView(LoginRequiredMixin, generic.CreateView):
+class AgentCreateView(OrganisorAndLoginRequiredMixins, generic.CreateView):
     template_name = "agents/agent_create.html"
     form_class = AgentModelForm
     
@@ -28,7 +29,7 @@ class AgentCreateView(LoginRequiredMixin, generic.CreateView):
         return super(AgentCreateView, self).form_valid(form)
     
     
-class AgentDetailView(LoginRequiredMixin, generic.DetailView):
+class AgentDetailView(OrganisorAndLoginRequiredMixins, generic.DetailView):
     template_name = "agents/agent_detail.html"
     context_object_name = "agent"
     
@@ -36,7 +37,7 @@ class AgentDetailView(LoginRequiredMixin, generic.DetailView):
         organization = self.request.user.userprofile
         return Agent.objects.filter(organization=organization)    
     
-class AgentUpdateView(LoginRequiredMixin, generic.UpdateView):
+class AgentUpdateView(OrganisorAndLoginRequiredMixins, generic.UpdateView):
     template_name = "agents/agent_update.html"
     form_class = AgentModelForm
     
@@ -49,7 +50,7 @@ class AgentUpdateView(LoginRequiredMixin, generic.UpdateView):
     
     
         
-class AgentDeleteView(LoginRequiredMixin, generic.DeleteView):
+class AgentDeleteView(OrganisorAndLoginRequiredMixins, generic.DeleteView):
     template_name = "agents/agent_delete.html"
     context_object_name = "agent"
     
