@@ -41,3 +41,9 @@ class LeadForm(forms.Form):
     age = forms.IntegerField(min_value=0)
     
     
+class LeadCategoryUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = (
+           'category',
+        )

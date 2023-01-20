@@ -1,13 +1,22 @@
 {% extends 'base.html' %}
+{% load tailwind_filters %}
 
 {% block content  %}
-    <a href="/leads">Back to List</a>
-    <p>This is craete Page Of lead</p>
+<div class="max-w-lg mx-auto">
 
-    <form method="POST">
+    <a class="hover:blue-600" href="/leads">Back to List</a>
+    <hr>
+    <div class="py-5 border-t border-gray-200">
+        <p class="text-4xl text-gray-800">This is create Page Of lead</p>
+    </div>
+
+    <form method="POST" class="mt-5">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
+        {{ form|crispy }}
+        <button class="w-full text-white bg-blue-500 hover:blue-600 px-3 py-1 rounded-md" type="submit">Submit</button>
 
+    </form>
+</div>
 {% endblock content  %}
+
+
